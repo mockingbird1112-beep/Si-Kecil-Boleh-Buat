@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff4dc">
+<title>Si Kecil Boleh Buat! | Little Helper</title>
+<style>
+:root{--ink:#27324b;--cream:#fff9ee;--pink:#ffd9df;--yellow:#ffe8a3;--mint:#d9f5e7;--blue:#dcecff;--purple:#e8ddff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fff4dc,#f7f1ff);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh}
+main{max-width:760px;margin:auto;padding:18px}
+header{text-align:center;padding:16px 8px}
+h1{font-size:clamp(1.7rem,6vw,2.6rem);margin:.25rem 0}
+.subtitle{margin:0 auto;max-width:520px;line-height:1.5}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pill,button{border:0;border-radius:999px;padding:12px 16px;font:inherit;font-weight:750;cursor:pointer}
+.pill{background:#fff;box-shadow:0 3px 0 #e6d9c8}
+button:focus-visible{outline:4px solid #536dfe;outline-offset:3px}
+.panel{background:#fff;border:3px solid #fff;box-shadow:0 8px 0 #eadfcf;border-radius:28px;padding:clamp(16px,4vw,28px);margin:16px 0}
+.mission-label{text-transform:uppercase;font-size:.78rem;letter-spacing:.08em;font-weight:900;color:#6653a8}
+h2{font-size:clamp(1.4rem,4.5vw,2rem);margin:.3rem 0}
+.prompt{font-size:1.1rem;line-height:1.5}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.choice{min-height:140px;background:var(--blue);border-radius:22px;padding:14px 8px;box-shadow:0 5px 0 #c8d8ec;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--ink)}
+.choice:nth-child(2){background:var(--pink);box-shadow:0 5px 0 #efc2cc}
+.choice:nth-child(3){background:var(--mint);box-shadow:0 5px 0 #bfe2d1}
+.emoji{font-size:2.5rem;line-height:1.2}
+.choice span:last-child{font-size:.92rem}
+.feedback{font-size:1.1rem;font-weight:800;min-height:3.3em;line-height:1.45;margin:20px 0 6px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.primary{background:#6653a8;color:white;box-shadow:0 4px 0 #4c3c85}
+.secondary{background:#fff0bc;box-shadow:0 4px 0 #e8d69b}
+.progress{height:12px;border-radius:99px;background:#eee7dc;overflow:hidden;margin:12px 0}
+.progress>div{height:100%;width:0;background:#74c9a0;transition:width .2s}
+.note{font-size:.9rem;line-height:1.5;color:#596176}
+footer{text-align:center;font-size:.82rem;padding:12px 8px;color:#596176}
+@media(max-width:480px){.choices{grid-template-columns:1fr}.choice{min-height:92px;flex-direction:row;justify-content:flex-start;padding:12px 18px}.emoji{font-size:2rem}.choice span:last-child{font-size:1rem}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="topbar">
+    <span class="pill">🏡 Dunia Rumah</span>
+    <button class="pill" id="language" aria-label="Tukar bahasa">BM / EN</button>
+  </div>
+  <p style="font-size:3rem;margin:12px 0 0" aria-hidden="true">🌈 🧸 🏠</p>
+  <h1 id="title">Si Kecil Boleh Buat!</h1>
+  <p class="subtitle" id="subtitle">Jom jadi pembantu kecil di rumah. Pilih gambar yang betul!</p>
+</header>
+
+<section class="panel" aria-live="polite">
+  <div class="mission-label" id="missionLabel">Misi 1 daripada 3</div>
+  <div class="progress" aria-label="Kemajuan misi"><div id="progress"></div></div>
+  <h2 id="missionTitle">Misi Kemas Mainan</h2>
+  <p class="prompt" id="prompt">Selepas bermain, di mana kita simpan mainan?</p>
+  <div class="choices" id="choices"></div>
+  <p class="feedback" id="feedback" role="status">Pilih satu gambar 😊</p>
+  <div class="actions">
+    <button class="primary" id="next" hidden>Teruskan ➜</button>
+    <button class="secondary" id="restart">Mula semula ↻</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2 id="grownTitle">Nota untuk ibu bapa</h2>
+  <p id="grownText">Temani anak sepanjang aktiviti. Puji usaha anak, bukan hanya jawapan yang betul. Aktiviti ini ialah latihan bermain dan bukan ujian.</p>
+  <p class="note" id="safety">Keselamatan: gunakan barang yang besar dan selamat untuk umur anak. Jauhkan objek kecil, bahan pencuci, air panas dan benda tajam.</p>
+</section>
+<footer>Si Kecil Boleh Buat! · Demo awal · Kandungan boleh disesuaikan oleh pemilik produk.</footer>
+</main>
+<script>
+const data = {
+  ms: {
+    title:"Si Kecil Boleh Buat!",
+    subtitle:"Jom jadi pembantu kecil di rumah. Pilih gambar yang betul!",
+    mission:"Misi",
+    missions:[
+      {title:"Misi Kemas Mainan",prompt:"Selepas bermain, di mana kita simpan mainan?",options:[["🧺","Dalam bakul",false],["🛏️","Atas katil",false],["🚪","Di pintu",false]],correct:0,success:"Hebat! Mainan masuk ke dalam bakul. Terima kasih, pembantu kecil! 🌟",tryAgain:"Cuba lagi, ya. Cari tempat untuk menyimpan mainan 😊"},
+      {title:"Misi Basuh Tangan",prompt:"Sebelum makan, apa yang kita perlu buat?",options:[["🧼","Basuh tangan",false],["👟","Pakai kasut",false],["🧸","Peluk teddy",false]],correct:0,success:"Bagus! Tangan bersih sebelum makan. Syabas! 🫧",tryAgain:"Cuba fikir: apa yang menjadikan tangan bersih? 😊"},
+      {title:"Misi Simpan Kasut",prompt:"Di mana kita letakkan kasut selepas masuk rumah?",options:[["🧊","Dalam peti sejuk",false],["👞","Di rak kasut",false],["🛁","Dalam tab mandi",false]],correct:1,success:"Pandainya! Kasut diletakkan di rak kasut. 🌈",tryAgain:"Cuba lagi. Cari tempat khas untuk kasut 😊"}
+    ],
+    grownTitle:"Nota untuk ibu bapa",
+    grownText:"Temani anak sepanjang aktiviti. Puji usaha anak, bukan hanya jawapan yang betul. Aktiviti ini ialah latihan bermain dan bukan ujian.",
+    safety:"Keselamatan: gunakan barang yang besar dan selamat untuk umur anak. Jauhkan objek kecil, bahan pencuci, air panas dan benda tajam.",
+    choose:"Pilih satu gambar 😊",next:"Teruskan ➜",restart:"Mula semula ↻",doneTitle:"Misi selesai!",doneText:"Tahniah, pembantu kecil! Kamu sudah mencuba 3 misi. Jom cuba bersama ibu atau ayah lagi nanti. ⭐",doneButton:"Main lagi ↻",endLabel:"Semua 3 misi selesai!"
+  },
+  en: {
+    title:"Little Helper!",
+    subtitle:"Let’s help at home. Choose the right picture!",
+    mission:"Mission",
+    missions:[
+      {title:"Toy Tidy-Up Mission",prompt:"Where do we put toys after playing?",options:[["🧺","In the basket",false],["🛏️","On the bed",false],["🚪","By the door",false]],correct:0,success:"Great job! Toys go in the basket. Thank you, little helper! 🌟",tryAgain:"Try again. Find a place to keep the toys 😊"},
+      {title:"Hand-Washing Mission",prompt:"What should we do before eating?",options:[["🧼","Wash our hands",false],["👟","Put on shoes",false],["🧸","Hug a teddy",false]],correct:0,success:"Well done! Clean hands before eating. 🫧",tryAgain:"Think about it: what helps make our hands clean? 😊"},
+      {title:"Shoe-Putting-Away Mission",prompt:"Where do we put shoes when we come inside?",options:[["🧊","In the fridge",false],["👞","On the shoe rack",false],["🛁","In the bathtub",false]],correct:1,success:"You did it! Shoes go on the shoe rack. 🌈",tryAgain:"Try again. Find a special place for shoes 😊"}
+    ],
+    grownTitle:"A note for grown-ups",
+    grownText:"Stay with your child during the activity. Praise their effort, not only correct answers. This is playful practice, not a test.",
+    safety:"Safety: use large, age-safe items. Keep small objects, cleaning products, hot water and sharp objects out of reach.",
+    choose:"Choose a picture 😊",next:"Next mission ➜",restart:"Start again ↻",doneTitle:"Missions complete!",doneText:"Hooray, little helper! You tried all 3 missions. Play again with a grown-up soon. ⭐",doneButton:"Play again ↻",endLabel:"All 3 missions complete!"
+  }
+};
+let lang="ms",index=0,solved=false;
+const $=id=>document.getElementById(id);
+function render(){
+ const d=data[lang]; const finished=index>=d.missions.length;
+ $("title").textContent=d.title;$("subtitle").textContent=d.subtitle;
+ $("grownTitle").textContent=d.grownTitle;$("grownText").textContent=d.grownText;$("safety").textContent=d.safety;
+ $("restart").textContent=d.restart;$("choices").innerHTML=""; $("next").hidden=true; solved=false;
+ if(finished){
+   $("missionLabel").textContent=d.endLabel;$("progress").style.width="100%";
+   $("missionTitle").textContent=d.doneTitle;$("prompt").textContent=d.doneText;$("feedback").textContent="🎉 ⭐ 🎉";
+   $("next").hidden=false;$("next").textContent=d.doneButton;return;
+ }
+ const m=d.missions[index];
+ $("missionLabel").textContent=`${d.mission} ${index+1} ${lang==="ms"?"daripada":"of"} ${d.missions.length}`;
+ $("progress").style.width=`${index/d.missions.length*100}%`;
+ $("missionTitle").textContent=m.title;$("prompt").textContent=m.prompt;$("feedback").textContent=d.choose;
+ m.options.forEach((o,i)=>{
+   const b=document.createElement("button");b.className="choice";
+   b.innerHTML=`<span class="emoji" aria-hidden="true">${o[0]}</span><span>${o[1]}</span>`;
+   b.addEventListener("click",()=>choose(i));$("choices").appendChild(b);
+ });
+}
+function choose(i){
+ if(solved)return;
+ const d=data[lang],m=d.missions[index];
+ if(i===m.correct){solved=true;$("feedback").textContent=m.success;$("progress").style.width=`${(index+1)/d.missions.length*100}%`;$("next").hidden=false;$("next").textContent=index===d.missions.length-1? (lang==="ms"?"Lihat hasil ⭐":"See result ⭐"):d.next; }
+ else $("feedback").textContent=m.tryAgain;
+}
+$("language").addEventListener("click",()=>{lang=lang==="ms"?"en":"ms";index=0;render()});
+$("next").addEventListener("click",()=>{if(index>=data[lang].missions.length)index=0;else index++;render()});
+$("restart").addEventListener("click",()=>{index=0;render()});
+render();
+</script>
+</body>
+</html>
